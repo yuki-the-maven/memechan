@@ -4,7 +4,7 @@ sources=$(wildcard src/*.js)
 tests=$(wildcard test/*_test.js)
 
 .PHONY: all test
-all: node_modules test
+all: node_modules test run
 
 node_modules: package.json
 	npm set progress=false && npm install
@@ -12,3 +12,6 @@ node_modules: package.json
 
 test: $(sources) $(tests)
 	$(istanbul) cover $(mocha)
+
+run:
+	node src/index.js
