@@ -18,6 +18,6 @@ be lame, use memes
 
 `make shell` will spawn a clj repl
 
-`make run` does nothing, expect it to start a webapp soon
+`make run` runs the webz
 
 `make clean` kills target

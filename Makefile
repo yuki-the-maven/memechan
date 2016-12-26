@@ -17,7 +17,7 @@ test: $(sources) $(tests)
 	lein test
 
 run:
-	# nothing yet
+	lein run
 
 shell:
 	lein repl

@@ -8,6 +8,8 @@
 	(java.io.File. "test/test_files/not_an_image.png"))
 (def test_files
 	(java.io.File. "test/test_files/"))
+(def unexistent-dir
+	(java.io.File. "/nowhere"))
 (def files-in-testdir
 	(filter (fn [^java.io.File file] (.isFile file)) (file-seq test_files)))
 
@@ -21,7 +23,15 @@
 	(testing "yields only shits_on_fire_yo when called for test_images dir"
 		(is (= 
 			    (list shits_on_fire_yo)
-			    (seq-images test_files)))))
+			    (seq-images test_files))))
+	(testing "throws for a unexistent dir"
+		(is (thrown?
+				IllegalArgumentException 
+				(seq-images unexistent-dir))))
+	(testing "throws when given a file"
+		(is (thrown?
+				IllegalArgumentException 
+				(seq-images shits_on_fire_yo)))))
 
 ; hashing
 

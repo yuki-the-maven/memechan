@@ -1,4 +1,10 @@
-(ns memechan.core)
+(ns memechan.core
+  (:require [ring.adapter.jetty :as ring-j]))
+
+;;;; stuff that will need to become configuration
+(def pics-dir
+  (java.io.File. (java.lang.System/getProperty "user.home") "Pictures/weapons/"))
+
 
 ;;; detection
 (defn is-image?
@@ -11,8 +17,11 @@
       "image/")))
 
 (defn seq-images
-  [dir]
-  (filter is-image? (file-seq dir)))
+  [^java.io.File dir]
+  (cond
+    (not (.exists dir)) (throw (IllegalArgumentException. "dir must exist"))
+    (not (.isDirectory dir)) (throw (IllegalArgumentException. "dir must be a directory"))
+    :default (filter is-image? (file-seq dir))))
 
 
 ;;;; hashing
@@ -56,3 +65,39 @@
   "fetch the hash for a file from an index"
   [index ^java.io.File file]
   (get index (.getName file)))
+
+
+;;;; web
+
+(defn layout[^String content]
+  (apply str
+    "<!DOCTYPE html>"
+    "<html>"
+      "<head>"
+      "</head>"
+      "<body>"
+        "<h1>memechan</h1>"
+        "<div class=\"content\">"
+          content
+        "</div>"
+      "</body>"
+    "</html>"
+    ))
+
+(defn as-img-tag[^java.io.File image]
+  (str "<img src=\"" (.getName image) "\" alt=\"" (.getName image) "\">"))
+
+(defn main-page[layouter image-renderer images]
+  (layout
+    (apply str
+      (map image-renderer images))))
+
+(def default-main-page
+  (partial main-page layout as-img-tag (seq-images pics-dir)))
+
+(defn handler [request]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (default-main-page)})
+
+(ring-j/run-jetty handler {:port 3000})

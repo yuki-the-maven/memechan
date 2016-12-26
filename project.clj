@@ -4,4 +4,7 @@
   :license {:name "MIT"
             :url "http://www.opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.apache.tika/tika-core "1.13"]])
+                 [org.apache.tika/tika-core "1.13"]
+                 [ring/ring-core "1.5.0"]
+                 [ring/ring-jetty-adapter "1.5.0"]]
+  :main memechan.core)
