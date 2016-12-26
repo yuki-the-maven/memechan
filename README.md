@@ -2,6 +2,8 @@
 
 be lame, use memes
 
+[![Build Status](https://travis-ci.org/yuki-the-maven/memechan.svg?branch=master)](https://travis-ci.org/yuki-the-maven/memechan)
+
 ## build
 
 `make`
