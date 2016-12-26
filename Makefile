@@ -4,7 +4,7 @@ tests=$(wildcard test/**/*_test.clj)
 # TODO: make version changeable
 
 
-.PHONY: all run shell test
+.PHONY: all clean run shell test
 
 all: test build
 
@@ -21,3 +21,6 @@ run:
 
 shell:
 	lein repl
+
+clean:
+	rm -rf target
