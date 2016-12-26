@@ -1,17 +1,23 @@
-mocha=./node_modules/.bin/_mocha
-istanbul=./node_modules/.bin/istanbul
-sources=$(wildcard src/*.js)
-tests=$(wildcard test/*_test.js)
+sources=$(wildcard src/**/*.clj)
+tests=$(wildcard test/**/*_test.clj)
 
-.PHONY: all test
-all: node_modules test run
+# TODO: make version changeable
 
-node_modules: package.json
-	npm set progress=false && npm install
-	touch $@
+
+.PHONY: all run shell test
+
+all: test build
+
+build: target/memechan-0.1.0-SNAPSHOT.jar
+
+target/memechan-0.1.0-SNAPSHOT.jar: $(sources) project.clj
+	lein jar
 
 test: $(sources) $(tests)
-	$(istanbul) cover $(mocha)
+	lein test
 
 run:
-	node src/index.js
+	# nothing yet
+
+shell:
+	lein repl
