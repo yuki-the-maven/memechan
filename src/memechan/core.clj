@@ -1,5 +1,7 @@
 (ns memechan.core
-  (:require [ring.adapter.jetty :as ring-j]))
+  (:require [ring.adapter.jetty :as ring-j]
+            [ring.middleware.file :as ring-file])
+  (:import (java.net URLEncoder)))
 
 ;;;; stuff that will need to become configuration
 (def pics-dir
@@ -67,6 +69,14 @@
   (get index (.getName file)))
 
 
+;;;; urlencoding
+
+(defn url-encode [string]
+  (.replace
+    (URLEncoder/encode string "UTF-8")
+    "+"
+    "%20"))
+
 ;;;; web
 
 (defn layout[^String content]
@@ -74,6 +84,18 @@
     "<!DOCTYPE html>"
     "<html>"
       "<head>"
+        "<style>"
+".content img {"
+"  max-height:200px;"
+"  max-width:300px;"
+"  margin: 3rem;"
+"}"
+".content {"
+"    display: flex;"
+"    flex-flow: row wrap;"
+"    justify-content: space-around;"
+"}"
+        "</style>"
       "</head>"
       "<body>"
         "<h1>memechan</h1>"
@@ -85,7 +107,7 @@
     ))
 
 (defn as-img-tag[^java.io.File image]
-  (str "<img src=\"" (.getName image) "\" alt=\"" (.getName image) "\">"))
+  (str "<img src=\"" (url-encode (.getName image)) "\" alt=\"" (.getName image) "\">"))
 
 (defn main-page[layouter image-renderer images]
   (layout
@@ -95,9 +117,11 @@
 (def default-main-page
   (partial main-page layout as-img-tag (seq-images pics-dir)))
 
-(defn handler [request]
+(defn main-page-handler [request]
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body (default-main-page)})
+
+(def handler (ring-file/wrap-file main-page-handler pics-dir))
 
 (ring-j/run-jetty handler {:port 3000})
