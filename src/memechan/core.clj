@@ -1,6 +1,5 @@
 (ns memechan.core
-  (:require [ring.adapter.jetty :as ring-j]
-            [ring.middleware.file :as ring-file])
+  (:require [ring.middleware.file :as ring-file])
   (:import (java.net URLEncoder)))
 
 ;;;; stuff that will need to become configuration
@@ -123,5 +122,3 @@
    :body (default-main-page)})
 
 (def handler (ring-file/wrap-file main-page-handler pics-dir))
-
-(ring-j/run-jetty handler {:port 3000})
