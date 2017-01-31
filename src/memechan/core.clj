@@ -2,11 +2,6 @@
   (:require [ring.middleware.file :as ring-file])
   (:import (java.net URLEncoder)))
 
-;;;; stuff that will need to become configuration
-(def pics-dir
-  (java.io.File. (java.lang.System/getProperty "user.home") "Pictures/weapons/"))
-
-
 ;;; detection
 (defn is-image?
   "Determines if the file is an image with mimetype detection"
@@ -114,11 +109,12 @@
       (map image-renderer images))))
 
 (def default-main-page
-  (partial main-page layout as-img-tag (seq-images pics-dir)))
+  (partial main-page layout as-img-tag))
 
-(defn main-page-handler [request]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (default-main-page)})
-
-(def handler (ring-file/wrap-file main-page-handler pics-dir))
+(defn make-main-page-handler [pics-dir]
+  (ring-file/wrap-file 
+    (fn [request]
+      {:status 200
+       :headers {"Content-Type" "text/html"}
+       :body (default-main-page (seq-images pics-dir))})
+    pics-dir))
